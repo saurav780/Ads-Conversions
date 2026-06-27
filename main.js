@@ -2,7 +2,18 @@
 // Nav scroll
 window.addEventListener('scroll',()=>{
   const nav=document.getElementById('nav');
-  if(nav) nav.classList.toggle('sc',window.scrollY>30);
+  if(nav) {
+    const isSticky=window.scrollY>30;
+    nav.classList.toggle('sc',isSticky);
+    
+    // Update logo based on sticky state
+    const logoImg=document.getElementById('logo-img');
+    if(logoImg){
+      logoImg.src=isSticky
+        ? '/assets/images/ADS Conversion Logo.png'
+        : '/assets/images/ADS Conversion white logo.png';
+    }
+  }
 });
 
 // Mobile menu
@@ -199,16 +210,60 @@ function attachFormHandlers(){
       });
       
       if(hasEmail || hasPhone){
+        // Collect all form data
+        const formData = {
+          to_email: 'saurav@adsconversions.com,connect@adsconversions.com',
+          name: '',
+          phone: '',
+          email: '',
+          business: '',
+          message: ''
+        };
+        
+        // Extract data from inputs
+        inputs.forEach(input=>{
+          if(input.placeholder.includes('Name')) formData.name = input.value;
+          if(input.placeholder.includes('Mobile')) formData.phone = input.value;
+          if(input.type === 'email') formData.email = input.value;
+          if(input.placeholder.includes('Business')) formData.business = input.value;
+        });
+        
+        // Get textarea
+        const textarea = container.querySelector('textarea');
+        if(textarea) formData.message = textarea.value;
+        
         // Add loading state
         btn.style.opacity = '0.7';
         btn.style.pointerEvents = 'none';
         const originalText = btn.textContent;
         btn.textContent = 'Submitting...';
         
-        // Simulate form submission delay
-        setTimeout(()=>{
-          window.location.href='thank-you.html';
-        },600);
+        // Send email via EmailJS
+        if(typeof emailjs !== 'undefined'){
+          emailjs.send('service_sp3rc2s', 'template_4dd7rpy', {
+            to_email: formData.to_email,
+            from_name: formData.name,
+            from_email: formData.email,
+            phone: formData.phone,
+            business: formData.business,
+            message: formData.message
+          }).then(()=>{
+            setTimeout(()=>{
+              window.location.href='thank-you.html';
+            },500);
+          }).catch(error=>{
+            console.error('EmailJS Error:', error);
+            btn.textContent = originalText;
+            btn.style.opacity = '1';
+            btn.style.pointerEvents = 'auto';
+            alert('Error sending email. Please try again.');
+          });
+        } else {
+          // Fallback if EmailJS is not loaded
+          setTimeout(()=>{
+            window.location.href='thank-you.html';
+          },600);
+        }
       } else {
         alert('Please fill in at least an email or phone number');
       }
