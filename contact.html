@@ -125,6 +125,9 @@ footer{background:var(--ink2);color:#fff;padding:64px 0 32px}
 
 @media(min-width:920px){.contact-grid{display:grid;grid-template-columns:1fr 480px;gap:32px}}
 </style>
+<link rel="icon" href="/assets/images/ADS Conversion Site Icons.png" type="image/png">
+<link rel="apple-touch-icon" href="/assets/images/ADS Conversion Site Icons.png">
+<meta name="msapplication-TileImage" content="/assets/images/ADS Conversion Site Icons.png">
 </head>
 <body>
   <div data-include="header.html"></div>
@@ -149,17 +152,17 @@ footer{background:var(--ink2);color:#fff;padding:64px 0 32px}
         </div>
 
         <div>
-          <div class="hform" id="hform">
+          <form class="hform" id="hform" action="send-mail.php" method="post">
             <div class="hft">Connect With Our Experts</div>
             <div class="hfs">Fill a few details and we'll get back to you</div>
-            <div class="fg"><input class="input-field" type="text" placeholder="Your Name*" aria-label="Your Name"></div>
-            <div class="fg"><input class="input-field" type="tel" placeholder="Your Mobile Number*" aria-label="Your Mobile Number"></div>
-            <div class="fg"><input class="input-field" type="email" placeholder="Your Email*" aria-label="Your Email"></div>
-            <div class="fg"><input class="input-field" type="text" placeholder="Business / Website" aria-label="Business or Website"></div>
-            <div class="fg"><textarea class="input-field" placeholder="Anything else you would like us to know?" aria-label="Message"></textarea></div>
-            <button type="button" class="btn-submit fsub">Submit</button>
+            <div class="fg"><input class="input-field" type="text" name="name" placeholder="Your Name*" aria-label="Your Name" required></div>
+            <div class="fg"><input class="input-field" type="tel" name="phone" placeholder="Your Mobile Number*" aria-label="Your Mobile Number" required></div>
+            <div class="fg"><input class="input-field" type="email" name="email" placeholder="Your Email*" aria-label="Your Email" required></div>
+            <div class="fg"><input class="input-field" type="text" name="business" placeholder="Business / Website" aria-label="Business or Website"></div>
+            <div class="fg"><textarea class="input-field" name="message" placeholder="Anything else you would like us to know?" aria-label="Message"></textarea></div>
+            <button type="submit" class="btn-submit fsub">Submit</button>
             <p class="hint" style="margin-top:10px;color:var(--mu);font-size:13px">🔒 Your details are safe. We respect your privacy.</p>
-          </div>
+          </form>
         </div>
       </div>
 

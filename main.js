@@ -2,7 +2,18 @@
 // Nav scroll
 window.addEventListener('scroll',()=>{
   const nav=document.getElementById('nav');
-  if(nav) nav.classList.toggle('sc',window.scrollY>30);
+  if(nav) {
+    const isSticky=window.scrollY>30;
+    nav.classList.toggle('sc',isSticky);
+    
+    // Update logo based on sticky state
+    const logoImg=document.getElementById('logo-img');
+    if(logoImg){
+      logoImg.src=isSticky
+        ? '/assets/images/ADS Conversion Logo.png'
+        : '/assets/images/ADS Conversion white logo.png';
+    }
+  }
 });
 
 // Mobile menu
@@ -173,44 +184,47 @@ function faq(btn){
 
 // Form Submission Handler - Attach after small delay to ensure DOM is ready
 function attachFormHandlers(){
-  const submitButtons = document.querySelectorAll('button.fsub');
-  console.log('Found submit buttons:', submitButtons.length);
-  
-  submitButtons.forEach(btn=>{
-    btn.addEventListener('click',(e)=>{
+  const forms = document.querySelectorAll('form#hform');
+  forms.forEach(form=>{
+    form.addEventListener('submit', async (e)=>{
       e.preventDefault();
-      
-      // Get parent container with form inputs
-      const container = btn.closest('.hform') || btn.closest('div[style*="background"]') || btn.parentElement;
-      
-      if(!container){
-        console.warn('Could not find form container');
+
+      const submitBtn = form.querySelector('button.fsub');
+      const formData = new FormData(form);
+      const name = String(formData.get('name') || '').trim();
+      const email = String(formData.get('email') || '').trim();
+      const phone = String(formData.get('phone') || '').trim();
+
+      if(!email && !phone){
+        alert('Please fill in at least an email or phone number');
         return;
       }
-      
-      // Collect form data for validation
-      const inputs = container.querySelectorAll('input[type="email"], input[type="tel"], input[type="text"]');
-      
-      // Simple validation - at least email or phone should be filled
-      let hasEmail = false, hasPhone = false;
-      inputs.forEach(input=>{
-        if(input.type === 'email' && input.value.trim()) hasEmail = true;
-        if(input.type === 'tel' && input.value.trim()) hasPhone = true;
-      });
-      
-      if(hasEmail || hasPhone){
-        // Add loading state
-        btn.style.opacity = '0.7';
-        btn.style.pointerEvents = 'none';
-        const originalText = btn.textContent;
-        btn.textContent = 'Submitting...';
-        
-        // Simulate form submission delay
-        setTimeout(()=>{
-          window.location.href='thank-you.html';
-        },600);
-      } else {
-        alert('Please fill in at least an email or phone number');
+
+      if(submitBtn){
+        submitBtn.style.opacity = '0.7';
+        submitBtn.style.pointerEvents = 'none';
+        const originalText = submitBtn.textContent;
+        submitBtn.textContent = 'Submitting...';
+
+        try{
+          const response = await fetch('send-mail.php', {
+            method: 'POST',
+            body: formData
+          });
+          const result = await response.json().catch(()=>null);
+
+          if(response.ok && result && result.success){
+            setTimeout(()=>window.location.href='thank-you.html', 500);
+          } else {
+            throw new Error(result && result.message ? result.message : 'Unable to send message');
+          }
+        } catch(error){
+          console.error('PHP Mail Error:', error);
+          submitBtn.textContent = originalText;
+          submitBtn.style.opacity = '1';
+          submitBtn.style.pointerEvents = 'auto';
+          alert('Error sending email. Please try again.');
+        }
       }
     });
   });
@@ -243,10 +257,15 @@ function injectCarouselStyles(){
 function initTestimonialsCarousel(){
   injectCarouselStyles();
   document.querySelectorAll('.test-grid').forEach(grid=>{
-    // avoid double-init
     if(grid.dataset.tcInit) return;
     const cards = Array.from(grid.querySelectorAll('.test-card'));
-    if(cards.length <= 3) return;
+    if(!cards.length) return;
+
+    // helper to determine visible count based on viewport
+    const getVisible = ()=> window.innerWidth >= 1024 ? 3 : window.innerWidth >= 640 ? 2 : 1;
+    let visible = getVisible();
+    if(cards.length <= visible) return; // no carousel needed
+
     grid.dataset.tcInit = '1';
 
     // build carousel structure
@@ -269,33 +288,43 @@ function initTestimonialsCarousel(){
     const next = document.createElement('button'); next.className='car-btn next'; next.innerHTML=svgIcon('arrowRight');
     carWrap.appendChild(prev); carWrap.appendChild(next);
 
-    // dots
+    // dots container (we will populate based on pages)
     const dots = document.createElement('div'); dots.className='car-dots';
-    cards.forEach((_,i)=>{const d=document.createElement('div');d.className='car-dot';d.dataset.index=i; dots.appendChild(d)});
     carWrap.appendChild(dots);
 
     // replace original grid with carousel
     grid.parentNode.replaceChild(carWrap, grid);
 
     // state
-    let pos = 0; const total = cards.length;
-    let interval = null;
-    let isPaused = false;
+    const total = cards.length;
+    let pos = 0; let interval = null; let isPaused = false;
 
-    function getSlidePct(){const w=window.innerWidth; return w>=1024?33.333: w>=640?50:100}
+    function slideWidthPct(){ return 100 / visible; }
+    function maxPos(){ return Math.max(0, total - visible); }
+
+    function buildDots(){
+      dots.innerHTML = '';
+      const pages = maxPos() + 1;
+      for(let i=0;i<pages;i++){
+        const d = document.createElement('div'); d.className='car-dot'; d.dataset.index = i;
+        d.addEventListener('click', ()=>{ pos = i; update(); resetAuto(); });
+        dots.appendChild(d);
+      }
+    }
 
     function update(){
-      const pct = getSlidePct();
+      // ensure pos within bounds for current visible count
+      pos = Math.max(0, Math.min(pos, maxPos()));
+      const pct = slideWidthPct();
       track.style.transform = `translateX(-${pos * pct}%)`;
       dots.querySelectorAll('.car-dot').forEach((d,i)=>d.classList.toggle('active', i===pos));
     }
 
-    function nextSlide(){ pos = (pos+1)%total; update(); }
-    function prevSlide(){ pos = (pos-1+total)%total; update(); }
+    function nextSlide(){ pos = pos < maxPos() ? pos + 1 : 0; update(); }
+    function prevSlide(){ pos = pos > 0 ? pos - 1 : maxPos(); update(); }
 
     next.addEventListener('click', ()=>{ nextSlide(); resetAuto(); });
     prev.addEventListener('click', ()=>{ prevSlide(); resetAuto(); });
-    dots.querySelectorAll('.car-dot').forEach(d=>d.addEventListener('click', e=>{ pos = Number(e.target.dataset.index); update(); resetAuto(); }));
 
     function startAuto(){ if(interval) clearInterval(interval); if(!isPaused) interval = setInterval(nextSlide,4000); }
     function stopAuto(){ if(interval) clearInterval(interval); interval = null; }
@@ -331,7 +360,16 @@ function initTestimonialsCarousel(){
       isTouching = false; isPaused = false; resetAuto();
     });
 
-    window.addEventListener('resize', update);
+    // handle resize: recalc visible count, rebuild dots if page count changed
+    let lastPages = null;
+    function handleResize(){
+      const newVisible = getVisible();
+      if(newVisible !== visible){ visible = newVisible; const pages = maxPos() + 1; if(pages !== lastPages){ buildDots(); lastPages = pages; } pos = Math.min(pos, maxPos()); }
+      update();
+    }
+
+    buildDots(); lastPages = maxPos() + 1;
+    window.addEventListener('resize', handleResize);
     update(); startAuto();
   });
 }
