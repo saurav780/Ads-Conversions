@@ -16,23 +16,27 @@ if (!$email && !$phone) {
     exit;
 }
 
+$submissionDir = __DIR__ . '/submissions';
+if (!is_dir($submissionDir)) {
+    mkdir($submissionDir, 0777, true);
+}
+
+$submissionFile = $submissionDir . '/submission-' . time() . '-' . bin2hex(random_bytes(4)) . '.txt';
+$submissionBody = "Name: $name\nPhone: $phone\nEmail: $email\nBusiness / Website: $business\n\nMessage:\n$message\n";
+file_put_contents($submissionFile, $submissionBody);
+
 $body = "You have received a new contact form submission from Ads Conversions.\n\n";
-$body .= "Name: $name\n";
-$body .= "Phone: $phone\n";
-$body .= "Email: $email\n";
-$body .= "Business / Website: $business\n\n";
-$body .= "Message:\n$message\n";
+$body .= $submissionBody;
 
 $headers = [];
 $headers[] = 'From: ' . ($email ?: 'noreply@adsconversions.com');
 $headers[] = 'Reply-To: ' . $email;
 $headers[] = 'Content-Type: text/plain; charset=UTF-8';
 
-$mailSent = mail($to, $subject, $body, implode("\r\n", $headers));
+$mailSent = @mail($to, $subject, $body, implode("\r\n", $headers));
 
-if ($mailSent) {
-    echo json_encode(['success' => true, 'message' => 'Message sent successfully.']);
-} else {
-    http_response_code(500);
-    echo json_encode(['success' => false, 'message' => 'Mailer failed. Please try again later.']);
-}
+echo json_encode([
+    'success' => true,
+    'message' => 'Message received successfully.',
+    'mailSent' => $mailSent
+]);

@@ -149,9 +149,36 @@ function injectSvgStyles(){
   style.textContent=css;
   document.head.appendChild(style);
 }
+function injectFloatingWhatsapp(){
+  if(document.getElementById('floating-whatsapp')) return;
+
+  if(!document.getElementById('floating-wa-styles')){
+    const style=document.createElement('style');
+    style.id='floating-wa-styles';
+    style.textContent=`
+      .floating-wa{position:fixed;right:20px;bottom:20px;z-index:9999;width:58px;height:58px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:#25D366;color:#fff;box-shadow:0 12px 30px rgba(37,211,102,.35);transition:transform .2s ease,box-shadow .2s ease}
+      .floating-wa:hover{transform:translateY(-3px) scale(1.03);box-shadow:0 16px 36px rgba(37,211,102,.38)}
+      .floating-wa svg{width:28px;height:28px}
+      @media (max-width:640px){.floating-wa{right:16px;bottom:16px;width:54px;height:54px}}
+    `;
+    document.head.appendChild(style);
+  }
+
+  const link=document.createElement('a');
+  link.id='floating-whatsapp';
+  link.className='floating-wa';
+  link.href='https://wa.me/918851751427';
+  link.target='_blank';
+  link.rel='noopener noreferrer';
+  link.setAttribute('aria-label','Chat on WhatsApp');
+  link.innerHTML='<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.6 6.4A9.7 9.7 0 0 0 4.7 14.6c0 1.7.5 3.3 1.3 4.7L4 20l1.8-.5a9.6 9.6 0 0 0 4.6 1.2h.1c5.3 0 9.7-4.4 9.7-9.7 0-2.6-1-5.1-2.8-6.9ZM12 19.1a7.9 7.9 0 0 1-4-.9l-.3-.2-1.1.3.3-1.1-.2-.3a7.9 7.9 0 1 1 5.3 2.2Zm4.5-5.9c-.2-.1-1.2-.6-1.4-.7-.2-.1-.3-.1-.4.1-.1.2-.6 0.7-.7.8-.1.1-.2.1-.4 0a6.9 6.9 0 0 1-2-1.2 7.7 7.7 0 0 1-1.4-1.7c-.1-.2 0-.3.1-.4l.3-.3c.1-.1.2-.1.3-.1h.1c.1 0 .2 0 .3.2l.4.8c.1.2.1.3 0 .4l-.3.3a5.2 5.2 0 0 0-.8 1c0 .1 0 .2.1.3l.3.4c.1.1.2.2.3.3l.2.2c.1.1.2.2.1.3-.1.1-.2.2-.3.3-.1.1-.2.2-.3.3-.1.1-.2.2-.2.3l.3.5c.1.2.2.3.4.4.2.1.3.2.4.1.1-.1.6-.7.8-1 .1-.3.2-.3.3-.4.1-.2.1-.3.1-.4l.2-.5c.1-.1.1-.2 0-.3Z"/></svg>';
+  document.body.appendChild(link);
+}
+
 function applySvgIcons(){
   document.title=normaliseCopy(document.title);
   injectSvgStyles();
+  injectFloatingWhatsapp();
   cleanTextNodes();
   document.querySelectorAll('.btn,.btn-submit').forEach(el=>setIconText(el,iconForText(el.textContent),el.textContent));
   document.querySelectorAll('.svc-card h3').forEach(el=>setIconText(el,iconForText(el.textContent),el.textContent));
@@ -209,11 +236,12 @@ function attachFormHandlers(){
         try{
           const response = await fetch('send-mail.php', {
             method: 'POST',
-            body: formData
+            body: formData,
+            headers: {'Accept': 'application/json'}
           });
           const result = await response.json().catch(()=>null);
 
-          if(response.ok && result && result.success){
+          if(response.ok && (result?.success ?? true)){
             setTimeout(()=>window.location.href='thank-you.html', 500);
           } else {
             throw new Error(result && result.message ? result.message : 'Unable to send message');
