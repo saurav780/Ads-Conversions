@@ -2,7 +2,18 @@
 // Nav scroll
 window.addEventListener('scroll',()=>{
   const nav=document.getElementById('nav');
-  if(nav) nav.classList.toggle('sc',window.scrollY>30);
+  if(nav) {
+    const isSticky=window.scrollY>30;
+    nav.classList.toggle('sc',isSticky);
+    
+    // Update logo based on sticky state
+    const logoImg=document.getElementById('logo-img');
+    if(logoImg){
+      logoImg.src=isSticky
+        ? '/assets/images/ADS Conversion Logo.png'
+        : '/assets/images/ADS Conversion white logo.png';
+    }
+  }
 });
 
 // Mobile menu
@@ -138,9 +149,36 @@ function injectSvgStyles(){
   style.textContent=css;
   document.head.appendChild(style);
 }
+function injectFloatingWhatsapp(){
+  if(document.getElementById('floating-whatsapp')) return;
+
+  if(!document.getElementById('floating-wa-styles')){
+    const style=document.createElement('style');
+    style.id='floating-wa-styles';
+    style.textContent=`
+      .floating-wa{position:fixed;right:20px;bottom:20px;z-index:9999;width:58px;height:58px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:#25D366;color:#fff;box-shadow:0 12px 30px rgba(37,211,102,.35);transition:transform .2s ease,box-shadow .2s ease}
+      .floating-wa:hover{transform:translateY(-3px) scale(1.03);box-shadow:0 16px 36px rgba(37,211,102,.38)}
+      .floating-wa svg{width:28px;height:28px}
+      @media (max-width:640px){.floating-wa{right:16px;bottom:16px;width:54px;height:54px}}
+    `;
+    document.head.appendChild(style);
+  }
+
+  const link=document.createElement('a');
+  link.id='floating-whatsapp';
+  link.className='floating-wa';
+  link.href='https://wa.me/918851751427';
+  link.target='_blank';
+  link.rel='noopener noreferrer';
+  link.setAttribute('aria-label','Chat on WhatsApp');
+  link.innerHTML='<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.6 6.4A9.7 9.7 0 0 0 4.7 14.6c0 1.7.5 3.3 1.3 4.7L4 20l1.8-.5a9.6 9.6 0 0 0 4.6 1.2h.1c5.3 0 9.7-4.4 9.7-9.7 0-2.6-1-5.1-2.8-6.9ZM12 19.1a7.9 7.9 0 0 1-4-.9l-.3-.2-1.1.3.3-1.1-.2-.3a7.9 7.9 0 1 1 5.3 2.2Zm4.5-5.9c-.2-.1-1.2-.6-1.4-.7-.2-.1-.3-.1-.4.1-.1.2-.6 0.7-.7.8-.1.1-.2.1-.4 0a6.9 6.9 0 0 1-2-1.2 7.7 7.7 0 0 1-1.4-1.7c-.1-.2 0-.3.1-.4l.3-.3c.1-.1.2-.1.3-.1h.1c.1 0 .2 0 .3.2l.4.8c.1.2.1.3 0 .4l-.3.3a5.2 5.2 0 0 0-.8 1c0 .1 0 .2.1.3l.3.4c.1.1.2.2.3.3l.2.2c.1.1.2.2.1.3-.1.1-.2.2-.3.3-.1.1-.2.2-.3.3-.1.1-.2.2-.2.3l.3.5c.1.2.2.3.4.4.2.1.3.2.4.1.1-.1.6-.7.8-1 .1-.3.2-.3.3-.4.1-.2.1-.3.1-.4l.2-.5c.1-.1.1-.2 0-.3Z"/></svg>';
+  document.body.appendChild(link);
+}
+
 function applySvgIcons(){
   document.title=normaliseCopy(document.title);
   injectSvgStyles();
+  injectFloatingWhatsapp();
   cleanTextNodes();
   document.querySelectorAll('.btn,.btn-submit').forEach(el=>setIconText(el,iconForText(el.textContent),el.textContent));
   document.querySelectorAll('.svc-card h3').forEach(el=>setIconText(el,iconForText(el.textContent),el.textContent));
@@ -173,44 +211,48 @@ function faq(btn){
 
 // Form Submission Handler - Attach after small delay to ensure DOM is ready
 function attachFormHandlers(){
-  const submitButtons = document.querySelectorAll('button.fsub');
-  console.log('Found submit buttons:', submitButtons.length);
-  
-  submitButtons.forEach(btn=>{
-    btn.addEventListener('click',(e)=>{
+  const forms = document.querySelectorAll('form#hform');
+  forms.forEach(form=>{
+    form.addEventListener('submit', async (e)=>{
       e.preventDefault();
-      
-      // Get parent container with form inputs
-      const container = btn.closest('.hform') || btn.closest('div[style*="background"]') || btn.parentElement;
-      
-      if(!container){
-        console.warn('Could not find form container');
+
+      const submitBtn = form.querySelector('button.fsub');
+      const formData = new FormData(form);
+      const name = String(formData.get('name') || '').trim();
+      const email = String(formData.get('email') || '').trim();
+      const phone = String(formData.get('phone') || '').trim();
+
+      if(!email && !phone){
+        alert('Please fill in at least an email or phone number');
         return;
       }
-      
-      // Collect form data for validation
-      const inputs = container.querySelectorAll('input[type="email"], input[type="tel"], input[type="text"]');
-      
-      // Simple validation - at least email or phone should be filled
-      let hasEmail = false, hasPhone = false;
-      inputs.forEach(input=>{
-        if(input.type === 'email' && input.value.trim()) hasEmail = true;
-        if(input.type === 'tel' && input.value.trim()) hasPhone = true;
-      });
-      
-      if(hasEmail || hasPhone){
-        // Add loading state
-        btn.style.opacity = '0.7';
-        btn.style.pointerEvents = 'none';
-        const originalText = btn.textContent;
-        btn.textContent = 'Submitting...';
-        
-        // Simulate form submission delay
-        setTimeout(()=>{
-          window.location.href='thank-you.html';
-        },600);
-      } else {
-        alert('Please fill in at least an email or phone number');
+
+      if(submitBtn){
+        submitBtn.style.opacity = '0.7';
+        submitBtn.style.pointerEvents = 'none';
+        const originalText = submitBtn.textContent;
+        submitBtn.textContent = 'Submitting...';
+
+        try{
+          const response = await fetch('send-mail.php', {
+            method: 'POST',
+            body: formData,
+            headers: {'Accept': 'application/json'}
+          });
+          const result = await response.json().catch(()=>null);
+
+          if(response.ok && (result?.success ?? true)){
+            setTimeout(()=>window.location.href='thank-you.html', 500);
+          } else {
+            throw new Error(result && result.message ? result.message : 'Unable to send message');
+          }
+        } catch(error){
+          console.error('PHP Mail Error:', error);
+          submitBtn.textContent = originalText;
+          submitBtn.style.opacity = '1';
+          submitBtn.style.pointerEvents = 'auto';
+          alert('Error sending email. Please try again.');
+        }
       }
     });
   });
@@ -243,10 +285,15 @@ function injectCarouselStyles(){
 function initTestimonialsCarousel(){
   injectCarouselStyles();
   document.querySelectorAll('.test-grid').forEach(grid=>{
-    // avoid double-init
     if(grid.dataset.tcInit) return;
     const cards = Array.from(grid.querySelectorAll('.test-card'));
-    if(cards.length <= 3) return;
+    if(!cards.length) return;
+
+    // helper to determine visible count based on viewport
+    const getVisible = ()=> window.innerWidth >= 1024 ? 3 : window.innerWidth >= 640 ? 2 : 1;
+    let visible = getVisible();
+    if(cards.length <= visible) return; // no carousel needed
+
     grid.dataset.tcInit = '1';
 
     // build carousel structure
@@ -269,33 +316,43 @@ function initTestimonialsCarousel(){
     const next = document.createElement('button'); next.className='car-btn next'; next.innerHTML=svgIcon('arrowRight');
     carWrap.appendChild(prev); carWrap.appendChild(next);
 
-    // dots
+    // dots container (we will populate based on pages)
     const dots = document.createElement('div'); dots.className='car-dots';
-    cards.forEach((_,i)=>{const d=document.createElement('div');d.className='car-dot';d.dataset.index=i; dots.appendChild(d)});
     carWrap.appendChild(dots);
 
     // replace original grid with carousel
     grid.parentNode.replaceChild(carWrap, grid);
 
     // state
-    let pos = 0; const total = cards.length;
-    let interval = null;
-    let isPaused = false;
+    const total = cards.length;
+    let pos = 0; let interval = null; let isPaused = false;
 
-    function getSlidePct(){const w=window.innerWidth; return w>=1024?33.333: w>=640?50:100}
+    function slideWidthPct(){ return 100 / visible; }
+    function maxPos(){ return Math.max(0, total - visible); }
+
+    function buildDots(){
+      dots.innerHTML = '';
+      const pages = maxPos() + 1;
+      for(let i=0;i<pages;i++){
+        const d = document.createElement('div'); d.className='car-dot'; d.dataset.index = i;
+        d.addEventListener('click', ()=>{ pos = i; update(); resetAuto(); });
+        dots.appendChild(d);
+      }
+    }
 
     function update(){
-      const pct = getSlidePct();
+      // ensure pos within bounds for current visible count
+      pos = Math.max(0, Math.min(pos, maxPos()));
+      const pct = slideWidthPct();
       track.style.transform = `translateX(-${pos * pct}%)`;
       dots.querySelectorAll('.car-dot').forEach((d,i)=>d.classList.toggle('active', i===pos));
     }
 
-    function nextSlide(){ pos = (pos+1)%total; update(); }
-    function prevSlide(){ pos = (pos-1+total)%total; update(); }
+    function nextSlide(){ pos = pos < maxPos() ? pos + 1 : 0; update(); }
+    function prevSlide(){ pos = pos > 0 ? pos - 1 : maxPos(); update(); }
 
     next.addEventListener('click', ()=>{ nextSlide(); resetAuto(); });
     prev.addEventListener('click', ()=>{ prevSlide(); resetAuto(); });
-    dots.querySelectorAll('.car-dot').forEach(d=>d.addEventListener('click', e=>{ pos = Number(e.target.dataset.index); update(); resetAuto(); }));
 
     function startAuto(){ if(interval) clearInterval(interval); if(!isPaused) interval = setInterval(nextSlide,4000); }
     function stopAuto(){ if(interval) clearInterval(interval); interval = null; }
@@ -331,7 +388,16 @@ function initTestimonialsCarousel(){
       isTouching = false; isPaused = false; resetAuto();
     });
 
-    window.addEventListener('resize', update);
+    // handle resize: recalc visible count, rebuild dots if page count changed
+    let lastPages = null;
+    function handleResize(){
+      const newVisible = getVisible();
+      if(newVisible !== visible){ visible = newVisible; const pages = maxPos() + 1; if(pages !== lastPages){ buildDots(); lastPages = pages; } pos = Math.min(pos, maxPos()); }
+      update();
+    }
+
+    buildDots(); lastPages = maxPos() + 1;
+    window.addEventListener('resize', handleResize);
     update(); startAuto();
   });
 }

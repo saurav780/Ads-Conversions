@@ -79,7 +79,29 @@ nav.sc .hbg span{background:var(--ink)}
 .h1 em{font-style:normal;background:linear-gradient(90deg,#a78bfa,#4a9eff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
 .hero-sub{color:rgba(255,255,255,.55);font-size:17px;line-height:1.75;margin:18px 0 28px;max-width:520px}
 .h-btns{display:flex;flex-wrap:wrap;gap:12px}
-
+.trust-badges{display:flex;flex-wrap:wrap;gap:10px;margin:0 0 24px}
+.trust-badge{display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.16);border-radius:14px;padding:10px 12px;color:#fff;backdrop-filter:blur(8px);box-shadow:0 8px 24px rgba(2,6,23,.16)}
+.trust-badge strong{display:block;font-size:13px;font-weight:700}
+.trust-badge span{display:block;font-size:11px;color:rgba(255,255,255,.72)}
+.trust-badge .trust-stars{font-size:13px;color:#fbbf24;letter-spacing:1px}
+@media(max-width:640px){.trust-badges{flex-direction:column;align-items:flex-start}.trust-badge{width:100%}}
+/* MARQUEE */
+	.marquee-wrap{overflow:hidden;background:#fff;border-radius:24px;box-shadow:0 20px 50px rgba(15,23,42,.08);border:1px solid rgba(226,232,240,.7);padding:18px 0}
+	.marquee-track{display:flex;align-items:center;gap:18px;width:max-content;animation:marquee 34s linear infinite}
+	.marquee-item{flex:0 0 auto;width:140px;height:94px;display:flex;align-items:center;justify-content:center;padding:12px;background:rgba(248,250,252,.9);border-radius:18px;box-shadow:0 10px 20px rgba(15,23,42,.06)}
+	.marquee-item img{max-width:100%;max-height:72px;object-fit:contain;filter:grayscale(0);opacity:1}
+	@keyframes marquee{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+	.marquee-track:hover{animation-play-state:paused}
+	.contact-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:32px;align-items:center}
+	.contact-trust{padding:30px 28px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14);border-radius:24px;color:#fff}
+	.contact-trust h2{margin:0 0 14px}
+	.contact-trust p{color:rgba(255,255,255,.75);margin-bottom:22px}
+	.trust-badges-alt{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+	.trust-badge-alt{display:flex;align-items:flex-start;gap:12px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14);padding:16px;border-radius:18px}
+	.trust-badge-alt strong{display:block;font-size:14px;font-weight:700;color:#fff}
+	.trust-badge-alt span{display:block;font-size:12px;color:rgba(255,255,255,.72);margin-top:4px}
+	@media(max-width:1024px){.contact-grid{grid-template-columns:1fr}}
+	@media(max-width:640px){.marquee-item{width:110px;height:82px;padding:10px}.marquee-track{gap:12px}.contact-grid{gap:20px}}
 /* HFORM */
 .hform{background:#fff;border-radius:var(--rl);padding:30px 26px;box-shadow:0 20px 70px rgba(0,0,0,.4)}
 .hft{font-family:var(--fh);font-size:18px;font-weight:700;color:var(--ink);margin-bottom:4px}
@@ -192,6 +214,9 @@ footer{background:var(--ink2);color:#fff;padding:64px 0 32px}
 @media(max-width:1024px){.test-grid{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:640px){.test-grid{grid-template-columns:1fr}}
 </style>
+<link rel="icon" href="/assets/images/ADS Conversion Site Icons.png" type="image/png">
+<link rel="apple-touch-icon" href="/assets/images/ADS Conversion Site Icons.png">
+<meta name="msapplication-TileImage" content="/assets/images/ADS Conversion Site Icons.png">
 </head>
 <body>
 
@@ -207,6 +232,20 @@ footer{background:var(--ink2);color:#fff;padding:64px 0 32px}
       <div class="h-badge"><span class="pulse"></span>Google Certified Specialists</div>
       <h1 class="h1" style="color:#fff">Get More Sales, More Leads & <em>More Business</em></h1>
       <p class="hero-sub">Grow your business profitably with certified Google Ads specialists who are obsessed with your ROI. From search ads to shopping to YouTube — we handle it all.</p>
+      <div class="trust-badges">
+        <div class="trust-badge">
+          <span class="trust-stars">★★★★★</span>
+          <div><strong>4.9/5 Google Rating</strong><span>from verified clients</span></div>
+        </div>
+        <div class="trust-badge">
+          <span class="trust-stars">★★★★★</span>
+          <div><strong>4.8/5 Meta Rating</strong><span>trusted by growing brands</span></div>
+        </div>
+        <div class="trust-badge">
+          <span>✅</span>
+          <div><strong>100+ Happy Clients</strong><span>fast support & clear strategy</span></div>
+        </div>
+      </div>
       <div class="h-btns">
         <a href="#hform" class="btn btn-g">🚀 Get Free Audit</a>
         <a href="#services" class="btn btn-ow">📊 Our Services</a>
@@ -220,8 +259,77 @@ footer{background:var(--ink2);color:#fff;padding:64px 0 32px}
       <div class="fg"><input class="input-field" type="email" placeholder="Your Email*" aria-label="Your Email"></div>
       <div class="fg"><input class="input-field" type="text" placeholder="Website" aria-label="Website"></div>
       <div class="fg"><textarea class="input-field" placeholder="Anything else you would like us to know?" aria-label="Message"></textarea></div>
-      <button type="button" class="btn-submit fsub">Submit</button>
+      <button type="submit" class="btn-submit fsub">Submit</button>
       <p class="hint">🔒 Your details are safe. We respect your privacy.</p>
+    </div>
+  </div>
+</section>
+
+<!-- CLIENTS MARQUEE -->
+<section class="sec sec-off">
+  <div class="wrap">
+    <div style="text-align:center;margin-bottom:38px">
+      <div class="tag">Trusted Client Logos</div>
+      <h2 class="h2">Trusted by Brands We've Served</h2>
+      <p class="lead" style="margin-top:14px;max-width:720px;margin-left:auto;margin-right:auto">These are the companies we’ve helped grow with Google Ads, web development, and marketplace growth. The logos below represent trusted performance partners.</p>
+    </div>
+    <div class="marquee-wrap">
+      <div class="marquee-track">
+        <div class="marquee-item"><img src="/assets/images/34.png" alt="Client logo"></div>
+        <div class="marquee-item"><img src="/assets/images/35.png" alt="Client logo"></div>
+        <div class="marquee-item"><img src="/assets/images/36.png" alt="Client logo"></div>
+        <div class="marquee-item"><img src="/assets/images/37.png" alt="Client logo"></div>
+        <div class="marquee-item"><img src="/assets/images/38.png" alt="Client logo"></div>
+        <div class="marquee-item"><img src="/assets/images/39.png" alt="Client logo"></div>
+        <div class="marquee-item"><img src="/assets/images/40.png" alt="Client logo"></div>
+        <div class="marquee-item"><img src="/assets/images/41.png" alt="Client logo"></div>
+        <div class="marquee-item"><img src="/assets/images/42.png" alt="Client logo"></div>
+        <div class="marquee-item"><img src="/assets/images/43.png" alt="Client logo"></div>
+        <div class="marquee-item"><img src="/assets/images/44.png" alt="Client logo"></div>
+        <div class="marquee-item"><img src="/assets/images/45.png" alt="Client logo"></div>
+        <div class="marquee-item"><img src="/assets/images/47.png" alt="Client logo"></div>
+        <div class="marquee-item"><img src="/assets/images/48.png" alt="Client logo"></div>
+        <div class="marquee-item"><img src="/assets/images/49.png" alt="Client logo"></div>
+        <div class="marquee-item"><img src="/assets/images/50.png" alt="Client logo"></div>
+        <div class="marquee-item"><img src="/assets/images/51.png" alt="Client logo"></div>
+        <div class="marquee-item"><img src="/assets/images/52.png" alt="Client logo"></div>
+        <div class="marquee-item"><img src="/assets/images/53.png" alt="Client logo"></div>
+        <div class="marquee-item"><img src="/assets/images/54.png" alt="Client logo"></div>
+        <div class="marquee-item"><img src="/assets/images/56.png" alt="Client logo"></div>
+        <div class="marquee-item"><img src="/assets/images/57.png" alt="Client logo"></div>
+        <div class="marquee-item"><img src="/assets/images/58.png" alt="Client logo"></div>
+        <div class="marquee-item"><img src="/assets/images/59.png" alt="Client logo"></div>
+        <div class="marquee-item"><img src="/assets/images/60.png" alt="Client logo"></div>
+        <div class="marquee-item"><img src="/assets/images/61.png" alt="Client logo"></div>
+        <div class="marquee-item"><img src="/assets/images/62.png" alt="Client logo"></div>
+        <div class="marquee-item"><img src="/assets/images/34.png" alt="Client logo"></div>
+        <div class="marquee-item"><img src="/assets/images/35.png" alt="Client logo"></div>
+        <div class="marquee-item"><img src="/assets/images/36.png" alt="Client logo"></div>
+        <div class="marquee-item"><img src="/assets/images/37.png" alt="Client logo"></div>
+        <div class="marquee-item"><img src="/assets/images/38.png" alt="Client logo"></div>
+        <div class="marquee-item"><img src="/assets/images/39.png" alt="Client logo"></div>
+        <div class="marquee-item"><img src="/assets/images/40.png" alt="Client logo"></div>
+        <div class="marquee-item"><img src="/assets/images/41.png" alt="Client logo"></div>
+        <div class="marquee-item"><img src="/assets/images/42.png" alt="Client logo"></div>
+        <div class="marquee-item"><img src="/assets/images/43.png" alt="Client logo"></div>
+        <div class="marquee-item"><img src="/assets/images/44.png" alt="Client logo"></div>
+        <div class="marquee-item"><img src="/assets/images/45.png" alt="Client logo"></div>
+        <div class="marquee-item"><img src="/assets/images/47.png" alt="Client logo"></div>
+        <div class="marquee-item"><img src="/assets/images/48.png" alt="Client logo"></div>
+        <div class="marquee-item"><img src="/assets/images/49.png" alt="Client logo"></div>
+        <div class="marquee-item"><img src="/assets/images/50.png" alt="Client logo"></div>
+        <div class="marquee-item"><img src="/assets/images/51.png" alt="Client logo"></div>
+        <div class="marquee-item"><img src="/assets/images/52.png" alt="Client logo"></div>
+        <div class="marquee-item"><img src="/assets/images/53.png" alt="Client logo"></div>
+        <div class="marquee-item"><img src="/assets/images/54.png" alt="Client logo"></div>
+        <div class="marquee-item"><img src="/assets/images/56.png" alt="Client logo"></div>
+        <div class="marquee-item"><img src="/assets/images/57.png" alt="Client logo"></div>
+        <div class="marquee-item"><img src="/assets/images/58.png" alt="Client logo"></div>
+        <div class="marquee-item"><img src="/assets/images/59.png" alt="Client logo"></div>
+        <div class="marquee-item"><img src="/assets/images/60.png" alt="Client logo"></div>
+        <div class="marquee-item"><img src="/assets/images/61.png" alt="Client logo"></div>
+        <div class="marquee-item"><img src="/assets/images/62.png" alt="Client logo"></div>
+      </div>
     </div>
   </div>
 </section>
