@@ -236,28 +236,19 @@ function attachFormHandlers(){
       const email = String(formData.get('email') || '').trim();
       const phone = String(formData.get('phone') || '').trim();
 
-      let status = form.querySelector('.form-status');
-      if(!status){
-        status=document.createElement('div');
-        status.className='form-status';
-        form.appendChild(status);
-      }
-
       if(!email && !phone){
-        status.className='form-status show error';
-        status.textContent='Please fill in at least an email or phone number.';
+        alert('Please fill in at least an email or phone number');
         return;
       }
 
       if(submitBtn){
+        submitBtn.style.opacity = '0.7';
+        submitBtn.style.pointerEvents = 'none';
         const originalText = submitBtn.textContent;
-        submitBtn.disabled = true;
         submitBtn.textContent = 'Submitting...';
-        status.className='form-status show';
-        status.textContent='Submitting your request...';
 
         try{
-          const response = await fetch('submit.php', {
+          const response = await fetch('send-mail.php', {
             method: 'POST',
             body: formData,
             headers: {'Accept': 'application/json'}
@@ -265,21 +256,16 @@ function attachFormHandlers(){
           const result = await response.json().catch(()=>null);
 
           if(response.ok && (result?.success ?? true)){
-            status.className='form-status show success';
-            status.textContent = result?.message || 'Thanks! Your request has been received.';
-            submitBtn.textContent = 'Submitted ✓';
-            setTimeout(()=>{
-              window.location.href = '/thank-you.html';
-            }, 900);
+            setTimeout(()=>window.location.href='thank-you.html', 500);
           } else {
             throw new Error(result && result.message ? result.message : 'Unable to send message');
           }
         } catch(error){
-          console.error('Form submission error:', error);
+          console.error('PHP Mail Error:', error);
           submitBtn.textContent = originalText;
-          submitBtn.disabled = false;
-          status.className='form-status show error';
-          status.textContent = 'Error: ' + (error.message || 'Please try again.');
+          submitBtn.style.opacity = '1';
+          submitBtn.style.pointerEvents = 'auto';
+          alert('Error sending email. Please try again.');
         }
       }
     });
