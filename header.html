@@ -1,13 +1,28 @@
 ﻿<!-- Header fragment: nav and mobile menu -->
+<style>
+  .logo {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  #logo-img {
+    display: block;
+    width: clamp(96px, 8vw, 132px);
+    height: auto;
+    max-width: 100%;
+  }
+
+  @media (max-width: 768px) {
+    #logo-img {
+      width: clamp(84px, 22vw, 108px);
+    }
+  }
+</style>
 <nav id="nav">
   <div class="wrap ni">
     <a href="/" class="logo">
-      <svg width="30" height="30" viewBox="0 0 34 34" fill="none">
-        <polygon points="17,3 31,28 3,28" fill="none" stroke="#2651f5" stroke-width="1.8"/>
-        <polygon points="17,9 25,24 9,24" fill="rgba(38,81,245,0.15)" stroke="#2651f5" stroke-width="1.2"/>
-        <polygon points="17,15 21,22 13,22" fill="#2651f5"/>
-      </svg>
-      <span class="logo-t">Ads <span>Conversions</span></span>
+      <img id="logo-img" src="/assets/images/ADS Conversion white logo.png" alt="Ads Conversions Logo" width="132" height="132">
     </a>
     <ul class="nl">
       <li><a href="/">Home</a></li>
