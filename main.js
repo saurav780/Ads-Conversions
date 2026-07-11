@@ -18,6 +18,20 @@ window.addEventListener('scroll',()=>{
 
 // Mobile menu
 let mo=false;
+if(!document.getElementById('ads-ui-styles')){
+  const uiStyles=document.createElement('style');
+  uiStyles.id='ads-ui-styles';
+  uiStyles.textContent=`
+    .form-status{margin-top:12px;padding:10px 12px;border-radius:10px;font-size:14px;line-height:1.5;border:1px solid rgba(38,81,245,.15);background:rgba(38,81,245,.06);color:#0f172a;display:none}
+    .form-status.show{display:block}
+    .form-status.success{background:rgba(34,197,94,.12);color:#166534;border-color:rgba(34,197,94,.28)}
+    .form-status.error{background:rgba(239,68,68,.12);color:#991b1b;border-color:rgba(239,68,68,.28)}
+    .btn-submit:disabled{opacity:.72;cursor:wait;transform:none}
+    .hform .input-field{transition:border-color .2s ease,box-shadow .2s ease,transform .2s ease}
+    .hform .input-field:focus{transform:translateY(-1px);box-shadow:0 10px 28px rgba(38,81,245,.1)}
+  `;
+  document.head.appendChild(uiStyles);
+}
 function setMenu(open){
   mo=open;
   const h=document.getElementById('hbg'), m=document.getElementById('mob');

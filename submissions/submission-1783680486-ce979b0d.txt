@@ -1,0 +1,9 @@
+Name: Test User
+Mobile Number: 9876543210
+Email: test@example.com
+Website: https://example.com
+Message: Hello
+Submission Date (Local): 2026-07-10 10:48:06
+Submission Date (UTC): 2026-07-10 10:48:06 UTC
+IP Address: 127.0.0.1
+User-Agent: curl/8.5.0
